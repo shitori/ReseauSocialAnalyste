@@ -1,3 +1,5 @@
+import java.util.Date;
+
 public class Best {
     private int score;
     private String content;
@@ -91,5 +93,19 @@ public class Best {
     @Override
     public String toString() {
         return "score=" + score + ", content='" + content + '\n';
+    }
+
+    public static void actualScore(){
+        Date now = new Date();
+        System.out.println("Test à :"+now);
+        for (int i = 0; i < Message.getMessages().size(); i++) {
+            Message.getMessages().get(i).actualScore(now);
+        }
+    }
+
+    public static void printer() {
+        for (int i = 0; i < Message.getMessages().size(); i++) {
+            Message.getMessages().get(i).printer();
+        }
     }
 }

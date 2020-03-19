@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.function.Predicate;
+import java.util.concurrent.TimeUnit;
 
 public class Message {
     private Date date;
@@ -10,15 +10,25 @@ public class Message {
     private String message;
     private String user;
     private int score;
+    private int fils;
+
+    public int getFils() {
+        return fils;
+    }
+
+    public void setFils(int fils) {
+        this.fils = fils;
+    }
+
     private static ArrayList<Message> messages = new ArrayList<>();
 
-	public static ArrayList<Message> getMessages() {
-		return messages;
-	}
+    public static ArrayList<Message> getMessages() {
+        return messages;
+    }
 
-	public static void setMessages(ArrayList<Message> messages) {
-		Message.messages = messages;
-	}
+    public static void setMessages(ArrayList<Message> messages) {
+        Message.messages = messages;
+    }
 
     public Message(Date d, int im, int iu, String m, String u) {
         date = d;
@@ -27,6 +37,7 @@ public class Message {
         message = m;
         user = u;
         score = 20;
+        fils = 0;
     }
 
     public Date getDate() {
@@ -70,7 +81,7 @@ public class Message {
     }
 
     public String toString() {
-        return "De " + user + "(" + idUser + ") le " + date + ": (" + idMessage + ") " + message + "\n";
+        return fils+" fils: De " + user + "(" + idUser + ") le " + date + ": (" + idMessage + ") " + message + "\n";
         //return idMessage+"->"+score;
     }
 
@@ -82,29 +93,35 @@ public class Message {
         this.score = score;
     }
 
-    public static void addMessage(Message m){
-    	messages.add(m);
-	}
-
-    public static String toStringA(){
-        String s;
-        s = Arrays.toString(new ArrayList[]{messages});
-        return s;
+    public static void addMessage(Message m) {
+        messages.add(m);
     }
 
-    public void realScore() {
-        int sum = (int) (20-(((new Date().getTime()-getDate().getTime())/1000)%30));
-        ArrayList<Comment> comments = Comment.getComments();
-        for (int i=0;i<comments.size();i++){
-            if (comments.get(i).getPidMessage()==getIdMessage()){
-                sum+=comments.get(i).getScore();
+    public void printer() {
+        System.out.println(toString());
+        for (int j = 0; j < Comment.getComments().size(); j++) {
+            if (Comment.getComments().get(j).getPidMessage() == getIdMessage()) {
+                Comment.getComments().get(j).printer(1);
             }
         }
-        setScore(sum);
     }
-    public static void applyRealScore(){
-        for (int i=0;i<messages.size();i++){
-            messages.get(i).realScore();
+
+    public void actualScore(Date now) {
+        long diffInMillies = Math.abs(now.getTime() - getDate().getTime());
+        int diff = (int) TimeUnit.SECONDS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+        int sum = 20 - (diff % 30);
+        int f = 0;
+        for (int j = 0; j < Comment.getComments().size(); j++) {
+            if (Comment.getComments().get(j).getPidMessage() == getIdMessage()) {
+                f++;
+                Comment.getComments().get(j).actualScore(now);
+                sum += Comment.getComments().get(j).getScore();
+            }
         }
+        if (sum < 0) {
+            sum = 0;
+        }
+        setFils(f);
+        setScore(sum);
     }
 }

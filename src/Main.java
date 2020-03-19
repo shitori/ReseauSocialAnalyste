@@ -3,13 +3,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.ConcurrentModificationException;
 import java.util.Date;
 
 public class Main {
 
-    public static void main(String[] args) {
-
-
+    public static void init() {
         BufferedReader reader;
         try {
             Date d = new Date();
@@ -17,7 +16,7 @@ public class Main {
                     "reseauSocial.txt"));
             String line = reader.readLine();
             while (line != null) {
-                long time = ((d.getTime()-500000)) + (int)(Math.random() *( (d.getTime())- (d.getTime()-500000)));
+                long time = ((d.getTime() - 500000)) + (int) (Math.random() * ((d.getTime()) - (d.getTime() - 500000)));
                 String[] arrOfStr = line.split("\\|");
 
                 if (arrOfStr.length == 4) {
@@ -36,9 +35,12 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void main(String[] args) {
+        init();
         while (true){
-            Comment.applyRealScore();
-            Message.applyRealScore();
+            Best.actualScore();
             Best.test();
             System.out.println(Arrays.toString(Best.getBest3()));
             try {
@@ -47,8 +49,9 @@ public class Main {
                 e.printStackTrace();
             }
         }
-
-
+        /*Best.printer();
+        Best.actualScore();
+        Best.printer();*/
 
     }
 }
