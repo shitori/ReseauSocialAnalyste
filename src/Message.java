@@ -1,9 +1,12 @@
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-public class Message {
+public class Message extends UnicastRemoteObject implements MessageRMI {
     private Date date;
     private int idMessage;
     private int idUser;
@@ -30,7 +33,7 @@ public class Message {
         Message.messages = messages;
     }
 
-    public Message(Date d, int im, int iu, String m, String u) {
+    public Message(Date d, int im, int iu, String m, String u) throws RemoteException {
         date = d;
         idMessage = im;
         idUser = iu;

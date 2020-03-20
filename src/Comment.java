@@ -1,4 +1,6 @@
 import java.lang.reflect.Array;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -10,7 +12,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
-public class Comment {
+public class Comment extends UnicastRemoteObject implements CommentRMI {
     private Date date;
     private int idCommentaire;
     private int idUser;
@@ -31,7 +33,7 @@ public class Comment {
 
     private static ArrayList<Comment> comments = new ArrayList<>();
 
-    public Comment(Date d, int ic, int iu, String c, String u, int pidc, int pidm) {
+    public Comment(Date d, int ic, int iu, String c, String u, int pidc, int pidm) throws RemoteException {
         date = d;
         idCommentaire = ic;
         idUser = iu;
