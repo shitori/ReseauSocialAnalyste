@@ -95,17 +95,20 @@ public class Best {
         return "score=" + score + ", content='" + content + '\n';
     }
 
-    public static void actualScore(){
+    public static void actualScore() {
         Date now = new Date();
-        System.out.println("Test à :"+now);
+        System.out.println("Test à :" + now + "/" + now.getTime());
         for (int i = 0; i < Message.getMessages().size(); i++) {
-            Message.getMessages().get(i).actualScore(now);
+            //Message.getMessages().get(i).actualScore(now.getTime());
+            Message.getMessages().get(i).actualScore();
         }
     }
 
-    public static void printer() {
+    public static String printer() {
+        String s = "";
         for (int i = 0; i < Message.getMessages().size(); i++) {
-            Message.getMessages().get(i).printer();
+            s += Message.getMessages().get(i).printer();
         }
+        return s;
     }
 }

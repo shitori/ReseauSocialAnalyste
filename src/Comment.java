@@ -20,6 +20,15 @@ public class Comment {
     private int pidMessage;
     private int score;
     private int fils;
+    private long personalScore;
+
+    public long getPersonalScore() {
+        return personalScore;
+    }
+
+    public void setPersonalScore(long personalScore) {
+        this.personalScore = personalScore;
+    }
 
     public int getFils() {
         return fils;
@@ -110,10 +119,10 @@ public class Comment {
     @Override
     public String toString() {
         if (pidCommentaire == -1) {
-            return fils+" fils: Reponde de " + user + "(" + idUser + ") le " + date + " au message n°" + pidMessage + " : (" + idCommentaire + ") " + comment + "\n";
+            return "[" + fils + " fils/" + score + " score/" + personalScore + " score perso] Reponde de " + user + "(" + idUser + ") le " + date + " au message n°" + pidMessage + " : (" + idCommentaire + ") " + comment + "\n";
 
         }
-        return fils+" fils: Reponde de " + user + "(" + idUser + ") le " + date + " au commentaire n°" + pidCommentaire + " : (" + idCommentaire + ") " + comment + "\n";
+        return "[" + fils + " fils/" + score + " score/" + personalScore + " score perso] Reponde de " + user + "(" + idUser + ") le " + date + " au commentaire n°" + pidCommentaire + " : (" + idCommentaire + ") " + comment + "\n";
     }
 
     public int getScore() {
@@ -128,35 +137,55 @@ public class Comment {
         comments.add(c);
     }
 
-    public void printer(int nbTab) {
+    public String printer(int nbTab) {
+        String s = "";
         for (int i = 0; i < nbTab; i++) {
-            System.out.print("\t");
+            s+="\t";
         }
-        System.out.println(this);
+        s+=toString();
         for (int i = 0; i < comments.size(); i++) {
             if (comments.get(i).getPidCommentaire() == getIdCommentaire()) {
-                comments.get(i).printer(nbTab + 1);
+                s+=comments.get(i).printer(nbTab + 1);
             }
         }
+        return s;
     }
 
-    public void actualScore(Date now) {
-        long diffInMillies = Math.abs(now.getTime() - getDate().getTime());
+    public void actualScore() {
+        /*long diffInMillies = Math.abs(now - getDate().getTime());
         int diff = (int) TimeUnit.SECONDS.convert(diffInMillies, TimeUnit.MILLISECONDS);
-        int sum = 20 - (diff % 30);
-        int f=0;
-        //int sum = 20;
+        int sum = 20 - (diff / 30);
+        setPersonalScore(now);*/
+        setScore(20);
+        setScoreByDate();
+        int f = 0;
         for (int j = 0; j < comments.size(); j++) {
             if (comments.get(j).getPidCommentaire() == getIdCommentaire()) {
                 f++;
-                comments.get(j).actualScore(now);
-                sum += comments.get(j).getScore();
+                comments.get(j).actualScore();
+                addScore(comments.get(j).getScore());
             }
         }
-        if (sum < 0) {
-            sum = 0;
+        if (score < 0) {
+            setScore(0);
         }
         setFils(f);
-        setScore(sum);
+    }
+
+
+    public void addScore(int i) {
+        score += i;
+    }
+
+    public void removeScore(int i) {
+        score -= i;
+    }
+
+    public void setScoreByDate() {
+
+        long diffInMillies = Math.abs(new Date().getTime() - getDate().getTime());
+        int diff = (int) TimeUnit.SECONDS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+        setPersonalScore(diff);
+        removeScore(diff/30);
     }
 }

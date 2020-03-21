@@ -12,6 +12,17 @@ public class Message {
     private int score;
     private int fils;
 
+    private long personalScore;
+
+    public long getPersonalScore() {
+        return personalScore;
+    }
+
+    public void setPersonalScore(long personalScore) {
+        this.personalScore = personalScore;
+    }
+
+
     public int getFils() {
         return fils;
     }
@@ -81,8 +92,7 @@ public class Message {
     }
 
     public String toString() {
-        return fils+" fils: De " + user + "(" + idUser + ") le " + date + ": (" + idMessage + ") " + message + "\n";
-        //return idMessage+"->"+score;
+        return "[" + fils + " fils/" + score + " score/" + personalScore + " score perso] De " + user + "(" + idUser + ") le " + date + ": (" + idMessage + ") " + message + "\n";
     }
 
     public int getScore() {
@@ -97,31 +107,51 @@ public class Message {
         messages.add(m);
     }
 
-    public void printer() {
-        System.out.println(toString());
+    public String printer() {
+        String s = "";
+        s += toString();
         for (int j = 0; j < Comment.getComments().size(); j++) {
             if (Comment.getComments().get(j).getPidMessage() == getIdMessage()) {
-                Comment.getComments().get(j).printer(1);
+                s += Comment.getComments().get(j).printer(1);
             }
         }
+        return s;
     }
 
-    public void actualScore(Date now) {
-        long diffInMillies = Math.abs(now.getTime() - getDate().getTime());
+    public void actualScore() {
+        /*long diffInMillies = Math.abs(now - getDate().getTime());
         int diff = (int) TimeUnit.SECONDS.convert(diffInMillies, TimeUnit.MILLISECONDS);
-        int sum = 20 - (diff % 30);
+        int sum = 20 - (diff / 30);
+        setPersonalScore(now);*/
+        setScore(20);
+        setScoreByDate();
         int f = 0;
         for (int j = 0; j < Comment.getComments().size(); j++) {
             if (Comment.getComments().get(j).getPidMessage() == getIdMessage()) {
                 f++;
-                Comment.getComments().get(j).actualScore(now);
-                sum += Comment.getComments().get(j).getScore();
+                Comment.getComments().get(j).actualScore();
+                addScore(Comment.getComments().get(j).getScore());
             }
         }
-        if (sum < 0) {
-            sum = 0;
+        if (score < 0) {
+            setScore(0);
         }
         setFils(f);
-        setScore(sum);
+
+    }
+
+    public void addScore(int i) {
+        score += i;
+    }
+
+    public void removeScore(int i) {
+        score -= i;
+    }
+
+    public void setScoreByDate() {
+        long diffInMillies = Math.abs(new Date().getTime() - getDate().getTime());
+        int diff = (int) TimeUnit.SECONDS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+        setPersonalScore(diff);
+        removeScore(diff/30);
     }
 }

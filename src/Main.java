@@ -1,6 +1,4 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.ConcurrentModificationException;
@@ -39,19 +37,27 @@ public class Main {
 
     public static void main(String[] args) {
         init();
+        int i = 0;
         while (true){
             Best.actualScore();
             Best.test();
             System.out.println(Arrays.toString(Best.getBest3()));
+            String str = Best.printer();
+            BufferedWriter writer = null;
             try {
+
                 Thread.sleep(5000);
+                writer = new BufferedWriter(new FileWriter("log"+i));
+                writer.write(str);
+                writer.close();
             } catch (InterruptedException e) {
                 e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+            i++;
         }
-        /*Best.printer();
-        Best.actualScore();
-        Best.printer();*/
+
 
     }
 }
