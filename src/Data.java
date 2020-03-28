@@ -1,16 +1,18 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
-public class Data {
+public class Data extends UnicastRemoteObject implements DataRMI {
     private ArrayList<Message> messages;
     private ArrayList<Comment> comments;
     private Best best3[];
 
-    public Data() {
+    public Data() throws RemoteException {
         messages = new ArrayList<>();
         comments = new ArrayList<>();
         best3 = new Best[]{new Best(), new Best(), new Best()};
@@ -32,7 +34,7 @@ public class Data {
         this.comments = comments;
     }
 
-    public Best[] getBest3() {
+    public Best[] getBest3() throws RemoteException {
         return best3;
     }
 
@@ -40,7 +42,7 @@ public class Data {
         this.best3 = best3;
     }
 
-    public void init() {
+    public void init() throws RemoteException {
         BufferedReader reader;
         try {
             Date d = new Date();
@@ -67,7 +69,7 @@ public class Data {
         }
     }
 
-    public void searchBest3() {
+    public void searchBest3() throws RemoteException {
         for (int k = 0; k < getMessages().size(); k++) {
             Message m = getMessages().get(k);
             for (int i = 0; i < best3.length; i++) {
@@ -104,7 +106,7 @@ public class Data {
         }
     }
 
-    public void actualScore() {
+    public void actualScore() throws RemoteException{
         Date now = new Date();
         System.out.println("Test à :" + now + "/" + now.getTime());
         for (int i = 0; i < getMessages().size(); i++) {
@@ -154,7 +156,7 @@ public class Data {
         return c;
     }
 
-    public String printer() {
+    public String printer() throws RemoteException {
         String s = "";
         for (int i = 0; i < getMessages().size(); i++) {
             s += printerMessage(i);
