@@ -1,9 +1,10 @@
 import java.rmi.Naming;
+import java.util.Arrays;
 
 public class Client {
     public static void main(String[] args) throws Exception {
         String url = "rmi://localhost/RMIDemo";
-        Data d = (Data) Naming.lookup(url);
+        DataRMI d = (DataRMI) Naming.lookup(url);
         System.out.println("Connected...");
     }
 }
