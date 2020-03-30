@@ -6,5 +6,6 @@ public class Client {
         String url = "rmi://localhost/RMIDemo";
         DataRMI d = (DataRMI) Naming.lookup(url);
         System.out.println("Connected...");
+        //String serverReply = Arrays.toString(d.getBest3());
     }
 }

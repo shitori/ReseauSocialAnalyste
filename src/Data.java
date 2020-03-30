@@ -70,6 +70,7 @@ public class Data extends UnicastRemoteObject implements DataRMI {
     }
 
     public void searchBest3() throws RemoteException {
+        best3 = new Best[]{new Best(), new Best(), new Best()};
         for (int k = 0; k < getMessages().size(); k++) {
             Message m = getMessages().get(k);
             for (int i = 0; i < best3.length; i++) {
