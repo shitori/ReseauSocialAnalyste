@@ -68,6 +68,7 @@ public class Data {
     }
 
     public void searchBest3() {
+        best3 = new Best[]{new Best(), new Best(), new Best()};
         for (int k = 0; k < getMessages().size(); k++) {
             Message m = getMessages().get(k);
             for (int i = 0; i < best3.length; i++) {
