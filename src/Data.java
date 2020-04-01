@@ -34,8 +34,8 @@ public class Data extends UnicastRemoteObject implements DataRMI {
         this.comments = comments;
     }
 
-    public Best[] getBest3() throws RemoteException {
-        return best3;
+    public String getBest3() throws RemoteException {
+        return Arrays.toString(best3);
     }
 
     public void setBest3(Best[] best3) {
