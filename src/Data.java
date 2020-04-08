@@ -1,16 +1,15 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
 public class Data {
-    private ArrayList<Message> messages;
-    private ArrayList<Comment> comments;
-    private Best best3[];
+    private ArrayList<Message> messages; // liste de tous les messages
+    private ArrayList<Comment> comments; // liste de tous les commentaires
+    private Best[] best3; // liste des 3 meilleurs messages et/ou commentaires
 
-    public Data() {
+    public Data() { //
         messages = new ArrayList<>();
         comments = new ArrayList<>();
         best3 = new Best[]{new Best(), new Best(), new Best()};
@@ -44,8 +43,8 @@ public class Data {
         BufferedReader reader;
         try {
             Date d = new Date();
-            reader = new BufferedReader(new FileReader(
-                    "reseauSocial.txt"));
+            URL url = new File("reseauSocial.txt").toURI().toURL();
+            reader = new BufferedReader(new InputStreamReader(url.openStream()));
             String line = reader.readLine();
             while (line != null) {
                 long time = ((d.getTime() - 500000)) + (int) (Math.random() * ((d.getTime()) - (d.getTime() - 500000)));
@@ -177,14 +176,14 @@ public class Data {
 
     public String printComment(int index, int nbTab) {
         String s = "";
-        for (int i=0;i<nbTab;i++){
-            s+="\t";
+        for (int i = 0; i < nbTab; i++) {
+            s += "\t";
         }
         Comment c = comments.get(index);
         s += c.toString();
         for (int i = 0; i < getComments().size(); i++) {
             if (getComments().get(i).getPidCommentaire() == c.getIdCommentaire()) {
-                s += printComment(i, nbTab+1);
+                s += printComment(i, nbTab + 1);
             }
         }
         return s;
