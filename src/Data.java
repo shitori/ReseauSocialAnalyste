@@ -8,11 +8,11 @@ import java.util.Arrays;
 import java.util.Date;
 
 public class Data extends UnicastRemoteObject implements DataRMI {
-    private ArrayList<Message> messages;
-    private ArrayList<Comment> comments;
-    private Best best3[];
+    private ArrayList<Message> messages; // liste de tous les messages
+    private ArrayList<Comment> comments; // liste de tous les commentaires
+    private Best best3[]; // listes des 3 meilleurs messages et/ou commentaires
 
-    public Data() throws RemoteException {
+    public Data() throws RemoteException { // initialise les 3 listes avec des éléments null ou vide
         messages = new ArrayList<>();
         comments = new ArrayList<>();
         best3 = new Best[]{new Best(), new Best(), new Best()};
@@ -42,26 +42,26 @@ public class Data extends UnicastRemoteObject implements DataRMI {
         this.best3 = best3;
     }
 
-    public void init() throws RemoteException {
+    public void init() throws RemoteException { // initialise les listes de commentaire et de messages par rapport au fichier
         BufferedReader reader;
         try {
-            Date d = new Date();
-            reader = new BufferedReader(new FileReader(
-                    "reseauSocial.txt"));
-            String line = reader.readLine();
-            while (line != null) {
-                long time = ((d.getTime() - 500000)) + (int) (Math.random() * ((d.getTime()) - (d.getTime() - 500000)));
-                String[] arrOfStr = line.split("\\|");
-                if (arrOfStr.length == 4) {
+            Date d = new Date(); // date actuel
+            URL url = new File("reseauSocial.txt").toURI().toURL(); // url du fichier
+            reader = new BufferedReader(new InputStreamReader(url.openStream())); //ouverture du fichier
+            String line = reader.readLine(); //lecture ligne par ligne
+            while (line != null) { // tant que l'on est pas à la fin du fichier on lit les lignes une par une
+                long time = ((d.getTime() - 500000)) + (int) (Math.random() * ((d.getTime()) - (d.getTime() - 500000))); // genere un date random entre maintenant et il y a 5 minutes
+                String[] arrOfStr = line.split("\\|"); // on sépare les élément en fonction des "|"
+                if (arrOfStr.length == 4) { // s'il y a 4 éléments, c'est un message
                     messages.add(new Message(new Date(time), Integer.parseInt(arrOfStr[0]), Integer.parseInt(arrOfStr[1]), arrOfStr[2], arrOfStr[3]));
-                } else if (arrOfStr.length == 5) {
+                } else if (arrOfStr.length == 5) { // s'il y en a 5, c'est un commentaire de message
                     comments.add(new Comment(new Date(time), Integer.parseInt(arrOfStr[0]), Integer.parseInt(arrOfStr[1]), arrOfStr[2], arrOfStr[3], Integer.parseInt(arrOfStr[4]), -1));
-                } else if (arrOfStr.length == 6) {
+                } else if (arrOfStr.length == 6) { // s'il y en a 6, c'est un commentaire de commentaire
                     comments.add(new Comment(new Date(time), Integer.parseInt(arrOfStr[0]), Integer.parseInt(arrOfStr[1]), arrOfStr[2], arrOfStr[3], -1, Integer.parseInt(arrOfStr[5])));
-                } else {
+                } else { // sinon ce n'est pas reconnue
                     System.err.println("ligne non reconnue");
                 }
-                line = reader.readLine();
+                line = reader.readLine(); // fermetur du fichier
             }
             reader.close();
         } catch (IOException e) {
@@ -70,24 +70,25 @@ public class Data extends UnicastRemoteObject implements DataRMI {
     }
 
     public void searchBest3() throws RemoteException {
-        best3 = new Best[]{new Best(), new Best(), new Best()};
-        for (int k = 0; k < getMessages().size(); k++) {
+        best3 = new Best[]{new Best(), new Best(), new Best()}; // on réinistialise la liste best3
+        for (int k = 0; k < getMessages().size(); k++) { // pour chaque message de la listes de messages
             Message m = getMessages().get(k);
-            for (int i = 0; i < best3.length; i++) {
-                if (m.getScore() > best3[i].getScore()) {
+            for (int i = 0; i < best3.length; i++) { // pour chaque message ou commentaire de la liste best3
+                if (m.getScore() > best3[i].getScore()) { // si le message à un score plus élévé
                     boolean present = false;
-                    for (int j = 0; j < best3.length; j++) {
+                    for (int j = 0; j < best3.length; j++) { // on vérifie si le message n'est pas déja dans le liste best3
                         if (best3[j].getId() == m.getIdMessage()) {
                             present = true;
                         }
                     }
-                    if (!present) {
+                    if (!present) { // s'il n'est pas présent alors on l'ajoute
                         Best newb = new Best(m.getIdMessage(), m.getScore(), m.toString());
                         best3[i] = newb;
                     }
                 }
             }
         }
+        // même proceder mais avec les commentaires
         for (int k = 0; k < getComments().size(); k++) {
             Comment c = getComments().get(k);
             for (int i = 0; i < best3.length; i++) {
@@ -107,6 +108,10 @@ public class Data extends UnicastRemoteObject implements DataRMI {
         }
     }
 
+    /**
+     * Cette fonction a pour de réactualiser les scores par rapport au deffilement du temps
+     * @throws RemoteException
+     */
     public void actualScore() throws RemoteException{
         Date now = new Date();
         System.out.println("Test à :" + now + "/" + now.getTime());
@@ -116,12 +121,18 @@ public class Data extends UnicastRemoteObject implements DataRMI {
         }
     }
 
+    /**
+     * Cette fonction actualise le score d'un message de la liste des messages
+     * @param now
+     * @param index
+     * @return
+     */
     public Message actualScoreMessages(Date now, int index) {
         Message m = getMessages().get(index);
         m.setScore(20);
         m.setScoreByDate(now);
         m.setFils(0);
-        for (int i = 0; i < getComments().size(); i++) {
+        for (int i = 0; i < getComments().size(); i++) { // avant d'actualiser le score d'un message, il faut actualiser celui des ses commentaires liés
             if (getComments().get(i).getPidMessage() == m.getIdMessage()) {
                 m.setFils(m.getFils() + 1);
                 Comment c = actualScoreComments(now, i);
@@ -129,12 +140,19 @@ public class Data extends UnicastRemoteObject implements DataRMI {
                 m.addScore(comments.get(i).getScore());
             }
         }
-        if (m.getScore() < 0) {
+        if (m.getScore() < 0) { // si score plus petit que 0 alors on le met à 0
             m.setScore(0);
         }
         return m;
     }
 
+    /**
+     *
+     * Meme proceder qu'actualScoreMessage
+     * @param now
+     * @param index
+     * @return
+     */
     public Comment actualScoreComments(Date now, int index) {
         Comment c = getComments().get(index);
         c.setScore(20);
@@ -147,9 +165,6 @@ public class Data extends UnicastRemoteObject implements DataRMI {
                 comments.set(i, cbis);
                 c.addScore(comments.get(i).getScore());
             }
-        }
-        if (c.getScore() < 0) {
-            c.setScore(0);
         }
         if (c.getScore() < 0) {
             c.setScore(0);

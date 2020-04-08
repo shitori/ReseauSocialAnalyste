@@ -12,7 +12,7 @@ public class Best {
     public Best(int id, int s, String c) {
         this.id = id;
         this.score = s;
-        this.content = c;
+        this.content = c; // cette variable contient le toString() d'un message ou d'un commentaire
 
     }
 
