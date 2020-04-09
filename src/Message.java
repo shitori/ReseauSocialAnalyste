@@ -10,7 +10,7 @@ public class Message {
     private int score;
     private int fils;
 
-    private long personalScore; // variable de stockage
+    private long personalScore; // Variable de stockage.
 
     public long getPersonalScore() {
         return personalScore;
@@ -99,13 +99,13 @@ public class Message {
     }
 
     /**
-     * Soustrait par rapport à la date
+     * Soustrait par rapport à la date.
      * @param now
      */
     public void setScoreByDate(Date now) {
         long diffInMillies = Math.abs(now.getTime() - getDate().getTime());
         int diff = (int) TimeUnit.SECONDS.convert(diffInMillies, TimeUnit.MILLISECONDS);
-        setPersonalScore(diff); // permet de garder une trace de la différence de temps entre quand le message a été envoyer et maintenant
+        setPersonalScore(diff); // Permet de garder une trace de la différence entre le moment où le commentaire a été envoyé et maintenant.
         removeScore(diff/30);
     }
 }

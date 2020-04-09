@@ -14,7 +14,7 @@ public class Comment {
     private int pidMessage;
     private int score;
     private int fils;
-    private long personalScore; // variable permetant de vérifier la bonne actualisation
+    private long personalScore; // Variable permettant de vérifier la bonne actualisation.
 
     public long getPersonalScore() {
         return personalScore;
@@ -133,7 +133,7 @@ public class Comment {
 
         long diffInMillies = Math.abs(now.getTime() - getDate().getTime());
         int diff = (int) TimeUnit.SECONDS.convert(diffInMillies, TimeUnit.MILLISECONDS);
-        setPersonalScore(diff); // permet de garder une trace de la différence de temps entre quand le commentaire a été envoyer et maintenant
+        setPersonalScore(diff); // Permet de garder une trace de la différence entre le moment où le commentaire a été envoyé et maintenant.
         removeScore(diff/30);
     }
 }
