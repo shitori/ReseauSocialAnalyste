@@ -1,3 +1,6 @@
+import javax.xml.transform.*;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 import java.io.*;
 import java.net.URL;
 import java.rmi.RemoteException;
@@ -34,7 +37,45 @@ public class Data extends UnicastRemoteObject implements DataRMI {
     }
 
     public String getBest3() throws RemoteException {
-        return Arrays.toString(best3);
+        String xmlContent = "";
+
+        for (int i = 0; i < best3.length; i++) {
+            if (best3[i].getComment() != null) { // Si c'est un commentaire ...
+                xmlContent += "<comment id=\""+ best3[i].getComment().getIdCommentaire() +"\">" +
+                        "<score>" + best3[i].getComment().getScore() + "</score>" +
+                        "<author>" + best3[i].getComment().getUser() + "</author>" +
+                        "<date>" + best3[i].getComment().getDate() + "</date>" +
+                        "<content>" + best3[i].getComment().getComment() + "</content>" +
+                        "</comment>";
+            }
+            else { // Si c'est un message ...
+                xmlContent += "<message id=\""+ best3[i].getMessage().getIdMessage() +"\">" +
+                        "<score>" + best3[i].getMessage().getScore() + "</score>" +
+                        "<author>" + best3[i].getMessage().getUser() + "</author>" +
+                        "<date>" + best3[i].getMessage().getDate() + "</date>" +
+                        "<content>" + best3[i].getMessage().getMessage() + "</content>" +
+                        "</message>";
+            }
+        }
+
+        // Formatage du XML.
+        StringWriter stringWriter = new StringWriter();
+        StreamResult xmlOutput = new StreamResult(stringWriter);
+        Source xmlInput = new StreamSource(new StringReader("<posts>" + xmlContent + "</posts>"));
+
+        try {
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+            transformer.transform(xmlInput, xmlOutput);
+        } catch (TransformerConfigurationException e) {
+            e.printStackTrace();
+        } catch (TransformerException e) {
+            e.printStackTrace();
+        }
+
+        // On retourne la chaîne formatée.
+        return xmlOutput.getWriter().toString();
     }
 
     public void setBest3(Best[] best3) {
@@ -81,7 +122,7 @@ public class Data extends UnicastRemoteObject implements DataRMI {
                         }
                     }
                     if (!present) { // S'il n'est pas présent alors on l'ajoute.
-                        Best newb = new Best(m.getIdMessage(), m.getScore(), m.toString());
+                        Best newb = new Best(m.getIdMessage(), m.getScore(), m.toString(), m);
                         best3[i] = newb;
                     }
                 }
@@ -99,7 +140,7 @@ public class Data extends UnicastRemoteObject implements DataRMI {
                         }
                     }
                     if (!present) {
-                        Best newb = new Best(c.getIdCommentaire(), c.getScore(), c.toString());
+                        Best newb = new Best(c.getIdCommentaire(), c.getScore(), c.toString(), c);
                         best3[i] = newb;
                     }
                 }
