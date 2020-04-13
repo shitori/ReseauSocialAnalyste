@@ -152,7 +152,7 @@ public class Data extends UnicastRemoteObject implements DataRMI {
      */
     public void actualScore() throws RemoteException{
         Date now = new Date();
-        System.out.println("Test à : " + now + "/" + now.getTime());
+        System.out.println("Actualisation : " + now + " (" + now.getTime() + ")");
         for (int i = 0; i < getMessages().size(); i++) {
             Message m = actualScoreMessages(now, i);
             messages.set(i, m);
