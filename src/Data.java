@@ -41,18 +41,16 @@ public class Data extends UnicastRemoteObject implements DataRMI {
 
         for (int i = 0; i < best3.length; i++) {
             if (best3[i].getComment() != null) { // Si c'est un commentaire ...
-                xmlContent += "<comment id=\""+ best3[i].getComment().getIdCommentaire() +"\">" +
+                xmlContent += "<comment id=\""+ best3[i].getComment().getIdCommentaire() + "\" date=\"" + best3[i].getComment().getDate().getTime()  + "\">" +
                         "<score>" + best3[i].getComment().getScore() + "</score>" +
-                        "<author>" + best3[i].getComment().getUser() + "</author>" +
-                        "<date>" + best3[i].getComment().getDate() + "</date>" +
+                        "<author id=\"" + best3[i].getComment().getIdUser() + "\">" + best3[i].getComment().getUser() + "</author>" +
                         "<content>" + best3[i].getComment().getComment() + "</content>" +
                         "</comment>";
             }
             else { // Si c'est un message ...
-                xmlContent += "<message id=\""+ best3[i].getMessage().getIdMessage() +"\">" +
+                xmlContent += "<message id=\""+ best3[i].getMessage().getIdMessage() + "\" date=\"" + best3[i].getMessage().getDate().getTime()  + "\">"  +
                         "<score>" + best3[i].getMessage().getScore() + "</score>" +
-                        "<author>" + best3[i].getMessage().getUser() + "</author>" +
-                        "<date>" + best3[i].getMessage().getDate() + "</date>" +
+                        "<author id=\"" + best3[i].getMessage().getIdUser() + "\">" + best3[i].getMessage().getUser() + "</author>" +
                         "<content>" + best3[i].getMessage().getMessage() + "</content>" +
                         "</message>";
             }
@@ -154,7 +152,7 @@ public class Data extends UnicastRemoteObject implements DataRMI {
      */
     public void actualScore() throws RemoteException{
         Date now = new Date();
-        System.out.println("Test à :" + now + "/" + now.getTime());
+        System.out.println("Test à : " + now + "/" + now.getTime());
         for (int i = 0; i < getMessages().size(); i++) {
             Message m = actualScoreMessages(now, i);
             messages.set(i, m);
